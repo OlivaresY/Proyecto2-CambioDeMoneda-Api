@@ -3,6 +3,7 @@
     "name": "Proyecto2-CambioDeMoneda-Api",
     "slug": "Proyecto2-CambioDeMoneda-Api",
     "version": "1.0.0",
+    "sdkVersion": "57.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "proyecto2cambiodemonedaapi",
