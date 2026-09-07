@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { getWeatherByCity } from '../../services/api/weatherService';
+import { getWeatherByCity } from '../services/api/weatherService';
 
 export const useWeatherViewModel = (city: string = 'San Jose') => {
     const [loading, setLoading] = useState<boolean>(false);
