@@ -49,6 +49,8 @@ export default function CalculatorScreen() {
                 <Text style={[styles.rate, themeStyles.accentText]}>₡{exchangeRate}</Text>
             </View>
 
+            {error ? <Text style={styles.errorText}>{error}</Text> : null}
+
             <CustomInput
                 placeholder="Amount To Convert (USD)"
                 value={amount}
@@ -61,7 +63,7 @@ export default function CalculatorScreen() {
             {result !== null && (
                 <View style={styles.resultsContainer}>
                     <Text style={[styles.resultText, themeStyles.text]}>Real Amount: ₡{result.real.toFixed(2)}</Text>
-                    <Text style={[styles.resultText, themeStyles.text]}>Amount +2: ₡{result.withSurcarge.toFixed(2)}</Text>
+                    <Text style={[styles.resultText, themeStyles.text]}>Amount +2: ₡{result.withSurcharge.toFixed(2)}</Text>
                 </View>
             )}
         </View>

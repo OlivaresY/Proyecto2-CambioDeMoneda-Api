@@ -18,7 +18,7 @@ export const useCalculatorViewModel = () => {
             //inyeccion y llamada al servicio para obtener la tasa de cambio BAC
             const data = await getBacExchangeRate();
             setExchangeRate(data.venta); //o tambien se usa date.compra dependiendo la tasa qu se necesita calcular
-        } catch (err) {
+        } catch {
             setError('Failed to fetch exchange rate from Banco BAC San José.');
         } finally {
             setLoading(false);
