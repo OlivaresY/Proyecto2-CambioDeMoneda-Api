@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { getBacExchangeRate } from '../../services/api/exchangeService';
+import { getBacExchangeRate } from '../services/api/exchangeService';
 
 interface CalculationResult {
     real: number;
