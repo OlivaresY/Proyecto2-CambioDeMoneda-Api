@@ -1,23 +1,43 @@
+import * as Location from 'expo-location';
 import { useCallback, useEffect, useState } from 'react';
-import { getWeatherByCity } from '../services/api/weatherService';
+import { WeatherResponse } from '../models/weather.model';
+import { getWeatherByCity, getWeatherByCoordinates } from '../services/api/weatherService';
 
 export const useWeatherViewModel = (city: string = 'San Jose') => {
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
-    const [weatherData, setWeatherData] = useState<any | null>(null);//reemplazar 'any' con la interface real del clima
+    const [weatherData, setWeatherData] = useState<WeatherResponse | null>(null);
 
     const fetchWeather = useCallback(async () => {
         setLoading(true);
         setError(null);
         try {
-            const data = await getWeatherByCity(city);
+            const { status } = await Location.requestForegroundPermissionsAsync();//permisos de ubicacion en primer plano
+
+            //permiso denegado, usa por defecto SJ
+            if (status !== 'granted') {
+                const fallbackData = await getWeatherByCity('San Jose');
+                setWeatherData(fallbackData);
+                return;
+            }
+
+            //obtiene la posicion geografica actual de dispositivo
+            const location = await Location.getCurrentPositionAsync({
+                accuracy: Location.Accuracy.Balanced,
+            });
+            
+            const { latitude, longitude } = location.coords;
+
+            //consulta clima segun ubicacion cordenadas
+            const data = await getWeatherByCoordinates(latitude, longitude);
             setWeatherData(data);
+
         } catch (err) {
             setError('Failed to fetch weather data.');
         } finally {
             setLoading(false);
         }
-    }, [city]);
+    }, []);
 
     useEffect(() => {
         queueMicrotask(() => {
