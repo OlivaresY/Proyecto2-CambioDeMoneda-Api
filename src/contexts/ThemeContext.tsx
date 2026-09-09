@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { localDatabase } from '../services/storage/localDatabase';
 
 type Theme = 'light' | 'dark';
@@ -18,7 +18,7 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     useEffect(() => {
         const loadTheme = async () => {
             const storedTheme = await localDatabase.getItem(THEME_STORAGE_KEY);
-            if (storedTheme) {
+            if (storedTheme === 'light' || storedTheme === 'dark') {
                 setTheme(storedTheme);
             }
         };
