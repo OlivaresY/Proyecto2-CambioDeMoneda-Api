@@ -1,3 +1,4 @@
+//interfas de estado y UI para la app
 export interface WeatherResponse {
     city: string;
     temperature: number;
@@ -6,13 +7,14 @@ export interface WeatherResponse {
 
 }
 
+//interfaz para la respuesta JSON de OpenWeatherMap
 export interface OpenWeatherMapResponse {
     name: string;
     main: {
         temp: number;
     };
-    weather: array<{
+    weather: {
         description: string;
         icon: string;
-    }>;
+    }[];
 }

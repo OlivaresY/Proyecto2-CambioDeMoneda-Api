@@ -1,29 +1,33 @@
 import { OpenWeatherMapResponse, WeatherResponse } from '../../models/weather.model';
 
 //API key mediante variable de entorno
-const API_KEY = 'TY_API_KEY_DE_OPENWEATHERMAP';
+const API_KEY = process.env.EXPO_PUBLIC_WEATHER_API_KEY;
 const BASE_URL = 'https://api.openweathermap.org/data/2.5/weather';
 
 export const getWeatherByCity = async (city: string): Promise<WeatherResponse> => {
-    try {
-        const response = await fetch(`${BASE_URL}?q=${city}&appid=${API_KEY}&units=metric&lang=es`);
+  if (!API_KEY) {
+    throw new Error('API Key no encontrada en .env');
+  }
+
+  const url = `${BASE_URL}?q=${encodeURIComponent(city)}&units=metric&lang=es&appid=${API_KEY}`;
+  const response = await fetch(url);
 
         if (!response.ok) {
-            throw new Error(`Error fetching weather data: ${response.statusText}`);
+            throw new Error(`Error fetching weather data: ${response.status}`);
         }
 
         const data: OpenWeatherMapResponse = await response.json();
 
-        return {
-            city: data.name,
-            temperature: data.main.temp,
-            description: data.weather[0].description || 'Without description',
-            icon: data.weather[0]?.icon || ''
+        const weatherInfo = data.weather && data.weather.length > 0 ? data.weather[0] : null;
+
+        const formattedData: WeatherResponse = {
+            city: data.name ?? city,
+            temperature: Math.round(data.main?.temp ?? 0),
+            description: weatherInfo?.description ?? 'With out description',
+            icon: weatherInfo?.icon ? `https://openweathermap.org/img/wn/${weatherInfo.icon}@2x.png` : '',
         };
-    } catch (error) {
-        console.error('Error fetching weather data:', error);
-        throw error;
-    }
+
+        return formattedData;
 };
             
 
