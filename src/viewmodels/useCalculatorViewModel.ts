@@ -25,9 +25,11 @@ export const useCalculatorViewModel = () => {
         }
     }, []);
 
-    //llamada al inicializarse
+    //llamada al inicializarse usando queueMicrotask para evitar renderizados en cascada síncronos
     useEffect(() => {
-        fetchExchangeRate();
+        queueMicrotask(() => {
+            void fetchExchangeRate();
+        });
     }, [fetchExchangeRate]);
 
     const calculate = (amount: number, currency: 'USD' | 'CRC'): CalculationResult | null => {
