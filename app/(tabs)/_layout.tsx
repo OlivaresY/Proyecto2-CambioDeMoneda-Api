@@ -1,6 +1,5 @@
 import { Tabs } from 'expo-router';
 import { Calculator, Cloud } from 'lucide-react-native';
-import React from "react";
 import { useTheme } from '../../src/contexts/ThemeContext';
 
 export default function TabLayout() {

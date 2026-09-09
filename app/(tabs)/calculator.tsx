@@ -3,6 +3,7 @@ import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import CustomButton from '../../src/components/CustomButton';
 import CustomInput from '../../src/components/CustomInput';
 import { useTheme } from '../../src/contexts/ThemeContext';
+import { formatColons } from '../../src/utils/formatters';
 import { useCalculatorViewModel } from '../../src/viewmodels/useCalculatorViewModel';
 
 export default function CalculatorScreen() {
@@ -46,7 +47,9 @@ export default function CalculatorScreen() {
         <View style={[styles.container, themeStyles.background]}>
             <View style={[styles.card, themeStyles.cardBg]}>
                 <Text style={[styles.label, themeStyles.text]}>Current Exchange Rate:</Text>
-                <Text style={[styles.rate, themeStyles.accentText]}>₡{exchangeRate}</Text>
+                <Text style={[styles.rate, themeStyles.accentText]}>
+                    ₡{typeof exchangeRate === 'number' ? formatColons(exchangeRate) : exchangeRate}
+                </Text>
             </View>
 
             {error ? <Text style={styles.errorText}>{error}</Text> : null}
@@ -62,8 +65,12 @@ export default function CalculatorScreen() {
 
             {result !== null && (
                 <View style={styles.resultsContainer}>
-                    <Text style={[styles.resultText, themeStyles.text]}>Real Amount: ₡{result.real.toFixed(2)}</Text>
-                    <Text style={[styles.resultText, themeStyles.text]}>Amount +2: ₡{result.withSurcharge.toFixed(2)}</Text>
+                    <Text style={[styles.resultText, themeStyles.text]}>
+                        Real Amount: ₡{formatColons(result.real)}
+                    </Text>
+                    <Text style={[styles.resultText, themeStyles.text]}>
+                        Amount +2: ₡{formatColons(result.withSurcharge)}
+                    </Text>
                 </View>
             )}
         </View>
