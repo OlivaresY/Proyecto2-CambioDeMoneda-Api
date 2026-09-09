@@ -20,7 +20,9 @@ export const useWeatherViewModel = (city: string = 'San Jose') => {
     }, [city]);
 
     useEffect(() => {
-        fetchWeather();
+        queueMicrotask(() => {
+            void fetchWeather();
+        });
     }, [fetchWeather]);
 
     return {
