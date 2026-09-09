@@ -1,4 +1,3 @@
-import React from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import CustomButton from "../src/components/CustomButton";
 import CustomInput from "../src/components/CustomInput";
