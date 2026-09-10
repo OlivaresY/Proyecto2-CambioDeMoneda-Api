@@ -24,6 +24,12 @@ export const getWeatherByCoordinates = async (lat: number, lon: number): Promise
             temperature: Math.round(data.main?.temp ?? 0),
             description: weatherInfo?.description ?? 'No description',
             icon: weatherInfo?.icon ? `https://openweathermap.org/img/wn/${weatherInfo.icon}@2x.png` : '',
+            humidity: data.main?.humidity ?? 0,
+            feelsLike: Math.round(data.main?.feels_like ?? 0),
+            windSpeed: data.wind?.speed ?? 0,
+            lat: data.coord?.lat ?? lat,
+            lon: data.coord?.lon ?? lon,
+
         };
     };
     
@@ -44,8 +50,14 @@ export const getWeatherByCoordinates = async (lat: number, lon: number): Promise
   return {
     city: data.name ?? city,
     temperature: Math.round(data.main?.temp ?? 0),
-    description: weatherInfo?.description ?? 'Sin descripción',
+    description: weatherInfo?.description ?? 'no description',
     icon: weatherInfo?.icon ? `https://openweathermap.org/img/wn/${weatherInfo.icon}@2x.png` : '',
+    feelsLike: Math.round(data.main?.feels_like ?? 0),
+    humidity: data.main?.humidity ?? 0,
+    windSpeed: data.wind?.speed ?? 0,
+    lat: data.coord?.lat ?? 0,
+    lon: data.coord?.lon ?? 0,
+
   };
 };   
 

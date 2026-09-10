@@ -69,7 +69,7 @@ export default function CalculatorScreen() {
                         Real Amount: ₡{formatColons(result.real)}
                     </Text>
                     <Text style={[styles.resultText, themeStyles.text]}>
-                        Amount +2: ₡{formatColons(result.withSurcharge)}
+                        Amount BAC+2: ₡{formatColons(result.withSurcharge)}
                     </Text>
                 </View>
             )}

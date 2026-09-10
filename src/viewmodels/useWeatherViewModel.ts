@@ -28,11 +28,20 @@ export const useWeatherViewModel = (city: string = 'San Jose') => {
             
             const { latitude, longitude } = location.coords;
 
-            //consulta clima segun ubicacion cordenadas
+            //clima por coordenadas
             const data = await getWeatherByCoordinates(latitude, longitude);
+
+            //reverse de Geocoding para la provincia dinamica
+            const geocode = await Location.reverseGeocodeAsync({ latitude, longitude});
+
+            if (geocode && geocode.length > 0) {
+                data.province = geocode[0].region || undefined;
+            }
+
             setWeatherData(data);
 
         } catch (err) {
+            console.error(err);
             setError('Failed to fetch weather data.');
         } finally {
             setLoading(false);
