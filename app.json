@@ -41,7 +41,13 @@
       "expo-font",
       "expo-image",
       "expo-status-bar",
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Allow the application to access your location to display the current weather."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
