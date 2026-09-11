@@ -4,7 +4,7 @@ import { WeatherResponse } from '../models/weather.model';
 import { getWeatherByCity, getWeatherByCoordinates } from '../services/api/weatherService';
 
 export const useWeatherViewModel = (city: string = 'San Jose') => {
-    const [loading, setLoading] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [weatherData, setWeatherData] = useState<WeatherResponse | null>(null);
 

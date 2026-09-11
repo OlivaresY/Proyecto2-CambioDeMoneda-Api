@@ -56,5 +56,3 @@ const darkStyles = StyleSheet.create({
     cardBg: { backgroundColor: '#1F2937' },
     text: { color: '#F9FAFB' }
 });
-
-

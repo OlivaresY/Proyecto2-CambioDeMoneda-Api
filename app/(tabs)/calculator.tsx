@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Keyboard, StyleSheet, Text, View } from 'react-native';
 import CustomButton from '../../src/components/CustomButton';
 import CustomInput from '../../src/components/CustomInput';
 import { useTheme } from '../../src/contexts/ThemeContext';
@@ -11,6 +11,7 @@ export default function CalculatorScreen() {
     const isDarkMode = theme === 'dark';
 
     const [amount, setAmount] = useState('');
+    const [submittedAmount, setSubmittedAmount] = useState<number | null>(null);
     const [result, setResult] = useState<{real: number; withSurcharge: number } | null>(null);
 
     const {
@@ -27,10 +28,14 @@ export default function CalculatorScreen() {
         if (isNaN(numericAmount)) 
             return;
 
+        Keyboard.dismiss();//se ceirra teclado al darle convert
+
         //llamamos a ViewModel pasando el monto y la moneda por defecto 'USD'
         const res = calculate(numericAmount, 'USD');
         if (res !== null) {
             setResult(res);
+            setSubmittedAmount(numericAmount); //se guarda el monto para la cabezara del resultado
+            setAmount(''); //borra el contenido del input
         }
     };
 
@@ -59,12 +64,17 @@ export default function CalculatorScreen() {
                 value={amount}
                 onChangeText={setAmount}
                 keyboardType="numeric"
+                returnKeyLabel="done"
+                onSubmitEditing={handleCalculate}//permite calcular al tocar realizado del teclado
             />
 
             <CustomButton title="Convert" onPress={handleCalculate} />
 
-            {result !== null && (
-                <View style={styles.resultsContainer}>
+            {result !== null &&  submittedAmount !== null && (
+                <View style={[styles.resultsContainer, themeStyles.cardBg]}>
+                    <Text style={[styles.inputEchoText, themeStyles.accentText]}>
+                        ${formatColons(submittedAmount)} Are:
+                    </Text>
                     <Text style={[styles.resultText, themeStyles.text]}>
                         Real Amount: ₡{formatColons(result.real)}
                     </Text>
@@ -85,6 +95,7 @@ const styles = StyleSheet.create({
     rate: { fontSize: 32, fontWeight: 'bold' },
     loadingText: { marginTop: 10, fontSize: 16 },
     resultsContainer: { marginTop: 30, padding: 20, borderRadius: 12, backgroundColor: 'rgba(0,0,0,0.05)' },
+    inputEchoText: { fontSize: 18, fontWeight: 'bold', marginBottom: 10 },
     resultText: { fontSize: 18, marginVertical: 5, fontWeight: '500' },
     errorText: { color: 'red', marginBottom: 15, textAlign: 'center' }
 });
