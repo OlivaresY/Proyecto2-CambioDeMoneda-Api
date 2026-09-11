@@ -7,7 +7,7 @@ interface CalculationResult {
 }
 
 export const useCalculatorViewModel = () => {
-    const [loading, setLoading] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [exchangeRate, setExchangeRate] = useState<number | null>(null);
 
@@ -34,7 +34,7 @@ export const useCalculatorViewModel = () => {
 
     const calculate = (amount: number, currency: 'USD' | 'CRC'): CalculationResult | null => {
         if (!exchangeRate) {
-            return null; // No se puede calcular si no hay tasa de cambio
+            return null; //no se puede calcular si no hay tasa de cambio
         }
     const rateWithSurcharge = exchangeRate + 2;
     let realResult = 0;

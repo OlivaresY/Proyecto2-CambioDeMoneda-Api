@@ -1,4 +1,4 @@
-import React, { StyleSheet, TextInput, TextInputProps } from "react-native";
+import { StyleSheet, TextInput, TextInputProps } from "react-native";
 
 
 export default function CustomInput(props: TextInputProps) {
