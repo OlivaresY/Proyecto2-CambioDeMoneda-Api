@@ -1,6 +1,6 @@
 import { Cloud, Droplets, Thermometer, Wind } from "lucide-react-native";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Image, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { useTheme } from '../../src/contexts/ThemeContext';
 import { useWeatherViewModel } from '../../src/viewmodels/useWeatherViewModel';
@@ -9,7 +9,7 @@ import { useWeatherViewModel } from '../../src/viewmodels/useWeatherViewModel';
 export default function WeatherScreen() {
     const { theme } = useTheme();
     const isDarkMode = theme === 'dark';
-    const { weatherData, loading, error } = useWeatherViewModel();
+    const { weatherData, loading, error, refreshWeather } = useWeatherViewModel();
     const themeStyles = isDarkMode ? darkStyles : lightStyles;
 
     const currentDate = new Date().toLocaleDateString('es-CR', {
@@ -32,7 +32,7 @@ export default function WeatherScreen() {
         return () => clearInterval(timer);
     }, []);
 
-    if (loading) {
+    if (loading && weatherData) {
         return (
             <View style={[styles.centerContainer, themeStyles.background]}>
                 <ActivityIndicator size="large" color="#2563EB" />
@@ -41,13 +41,12 @@ export default function WeatherScreen() {
         );
     }
 
-    if (error){
+    if (error && !weatherData){
         return (
             <View style={[styles.centerContainer, themeStyles.background]}>
                 <Text style={[styles.errorText, { color: 'red' }]}>{error}</Text>
             </View>
         );
-
     }
 
     //si aun no hay datos, no rendereiza nada
@@ -60,7 +59,18 @@ export default function WeatherScreen() {
     :weatherData.city;
 
     return (
-        <ScrollView style={[styles.container, themeStyles.background]} showsVerticalScrollIndicator={false}>
+        <ScrollView 
+            style={[styles.container, themeStyles.background]} 
+            showsVerticalScrollIndicator={false}
+            refreshControl={
+                <RefreshControl 
+                    refreshing={loading} 
+                    onRefresh={refreshWeather}
+                    tintColor={isDarkMode ? '#60A5FA' : '#2563EB'}
+                    colors={['#2563EB']}
+                />
+            }
+        >
             <View style={styles.header}>
                 <Text style={[styles.locationTitle, themeStyles.text]}>{locationText}</Text>
                 <Text style={[styles.dateSubtitle, themeStyles.subText]}>Updated today at: {currentDate}</Text>
@@ -99,7 +109,8 @@ export default function WeatherScreen() {
                     <Text style={[styles.detailLabel, themeStyles.subText]}>Wind</Text>
                 </View>
             </View>
-<View style={[styles.mapContainer, themeStyles.cardBg]}>
+            
+            <View style={[styles.mapContainer, themeStyles.cardBg]}>
                 <Text style={[styles.mapTitle, themeStyles.text]}>Current location</Text>
                 <View style={{ height: 200, borderRadius: 12, overflow: 'hidden' }}>
                     <WebView 
