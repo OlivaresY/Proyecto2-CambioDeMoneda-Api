@@ -1,7 +1,7 @@
 import { Cloud, Droplets, Thermometer, Wind } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Image, ScrollView, StyleSheet, Text, View } from 'react-native';
-import MapView, { Marker, UrlTile } from 'react-native-maps';
+import { WebView } from 'react-native-webview';
 import { useTheme } from '../../src/contexts/ThemeContext';
 import { useWeatherViewModel } from '../../src/viewmodels/useWeatherViewModel';
 
@@ -99,33 +99,41 @@ export default function WeatherScreen() {
                     <Text style={[styles.detailLabel, themeStyles.subText]}>Wind</Text>
                 </View>
             </View>
-
-            {/*mapa*/}
-            <View style={[styles.mapContainer, themeStyles.cardBg]}>
+<View style={[styles.mapContainer, themeStyles.cardBg]}>
                 <Text style={[styles.mapTitle, themeStyles.text]}>Current location</Text>
-                <MapView 
-                    style={styles.map}
-                    mapType="none"
-                    region={{
-                        latitude: weatherData.lat,
-                        longitude: weatherData.lon,
-                        latitudeDelta: 0.05,
-                        longitudeDelta: 0.05,
-                    }}
-                >
-                    <UrlTile
-                    urlTemplate="https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png"
-                        maximumZ={19}
-                        flipY={false}
-                        tileSize={256}
-                        zIndex={1}
+                <View style={{ height: 200, borderRadius: 12, overflow: 'hidden' }}>
+                    <WebView 
+                        originWhitelist={['*']}
+                        source={{
+                            html: `
+                              <!DOCTYPE html>
+                              <html>
+                              <head>
+                                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                                <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+                                <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+                                <style>
+                                  html, body, #map { height: 100%; margin: 0; padding: 0; }
+                                </style>
+                              </head>
+                              <body>
+                                <div id="map"></div>
+                                <script>
+                                  var map = L.map('map', {zoomControl: false}).setView([${weatherData.lat}, ${weatherData.lon}], 13);
+                                  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                    maxZoom: 19,
+                                  }).addTo(map);
+                                  L.marker([${weatherData.lat}, ${weatherData.lon}]).addTo(map)
+                                    .bindPopup('${locationText}')
+                                    .openPopup();
+                                </script>
+                              </body>
+                              </html>
+                            `
+                        }}
+                        style={{ flex: 1, backgroundColor: 'transparent' }}
                     />
-
-                    <Marker 
-                        coordinate={{ latitude: weatherData.lat, longitude: weatherData.lon }}
-                        title={locationText}
-                    />
-                </MapView>
+                </View>
             </View>
             
             {/*espacio al final*/}
@@ -139,7 +147,7 @@ const styles = StyleSheet.create({
     centerContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
     header: { alignItems: 'center', marginBottom: 20, marginTop: 20 },
     locationTitle: { fontSize: 22, fontWeight: 'bold', textAlign: 'center' },
-    dateSubtitle: { fontSize: 14, marginTop: 4, textTransform: 'capitalize' }, // Añadido
+    dateSubtitle: { fontSize: 14, marginTop: 4, textTransform: 'capitalize' },
     clockContainer: {
         marginTop: 10, 
         paddingHorizontal: 16, 
@@ -158,7 +166,6 @@ const styles = StyleSheet.create({
     detailLabel: { fontSize: 14, marginTop: 4 },
     mapContainer: { padding: 15, borderRadius: 16, overflow: 'hidden' },
     mapTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 15 },
-    map: { width: '100%', height: 200, borderRadius: 12 },
     errorText: { color: 'red', fontSize: 16 }
 });
 
