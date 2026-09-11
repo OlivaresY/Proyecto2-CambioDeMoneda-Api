@@ -1,5 +1,5 @@
 import { StyleSheet, Switch, Text, View } from 'react-native';
-import Custombutton from '../../src/components/CustomButton';
+import CustomButton from '../../src/components/CustomButton';
 import { useAuth } from '../../src/contexts/AuthContext';
 import { useTheme } from '../../src/contexts/ThemeContext';
 
@@ -30,7 +30,7 @@ export default function SettingsScreen() {
                     />
                 </View>
 
-                <Custombutton title="Logout" onPress={logout} />
+                <CustomButton title="Logout" onPress={logout} />
             </View>
         </View>
     );

@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Calculator, Cloud } from 'lucide-react-native';
+import { Calculator, Cloud, Settings } from 'lucide-react-native';
 import { useTheme } from '../../src/contexts/ThemeContext';
 
 export default function TabLayout() {
@@ -35,6 +35,14 @@ export default function TabLayout() {
                     title: 'Clima',
                     tabBarIcon: ({ color }) =>
                         <Cloud color={color} size={24} />,
+                }}
+            />
+            <Tabs.Screen
+                name="settings"
+                options={{
+                    title: 'Settings',
+                    tabBarIcon: ({ color }) =>
+                        <Settings color={color} size={24} />,
                 }}
             />
         </Tabs>

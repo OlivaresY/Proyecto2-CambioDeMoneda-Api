@@ -1,15 +1,19 @@
-import { Slot, useRouter, useSegments } from "expo-router";
-import React, { useEffect } from "react";
+import { Slot, useRootNavigationState, useRouter, useSegments } from "expo-router";
+import { useEffect } from "react";
 import { AuthProvider, useAuth } from "../src/contexts/AuthContext";
 import { ThemeProvider } from "../src/contexts/ThemeContext";
 
-//componente para manejar la lógica de redirección en la sesión
+//lógica de redirección en la sesión
 function RootNavigation() {
   const { isAuthenticated } = useAuth();
   const segments = useSegments();
   const router = useRouter();
+  const rootNavigationState = useRootNavigationState();
 
   useEffect(() => {
+    if (!rootNavigationState?.key)
+      return;
+
     const inTabsGroup = segments[0] === "(tabs)";
 
     if (!isAuthenticated && inTabsGroup) {
@@ -19,7 +23,7 @@ function RootNavigation() {
       //si está autentificado y está en login, se redirige a la calculadora
       router.replace('/(tabs)/calculator');
     }
-  }, [isAuthenticated, segments, router]);
+  }, [isAuthenticated, segments, router, rootNavigationState]);
   
   return <Slot />;
 }
