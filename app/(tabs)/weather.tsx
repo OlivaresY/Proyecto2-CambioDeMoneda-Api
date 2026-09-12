@@ -12,6 +12,8 @@ export default function WeatherScreen() {
     const { weatherData, loading, error, refreshWeather } = useWeatherViewModel();
     const themeStyles = isDarkMode ? darkStyles : lightStyles;
 
+    const [isScrollEnabled, setIsScrollEnabled] = useState(true);
+
     const currentDate = new Date().toLocaleDateString('es-CR', {
         weekday: 'long',
         day: 'numeric',
@@ -62,6 +64,7 @@ export default function WeatherScreen() {
         <ScrollView 
             style={[styles.container, themeStyles.background]} 
             showsVerticalScrollIndicator={false}
+            scrollEnabled={isScrollEnabled}
             refreshControl={
                 <RefreshControl 
                     refreshing={loading} 
@@ -112,7 +115,11 @@ export default function WeatherScreen() {
             
             <View style={[styles.mapContainer, themeStyles.cardBg]}>
                 <Text style={[styles.mapTitle, themeStyles.text]}>Current location</Text>
-                <View style={{ height: 200, borderRadius: 12, overflow: 'hidden' }}>
+                <View style={{ height: 200, borderRadius: 12, overflow: 'hidden' }}
+                            onTouchStart={() => setIsScrollEnabled(false)}
+                        onTouchEnd={() => setIsScrollEnabled(true)}
+                    onTouchCancel={() => setIsScrollEnabled(true)}
+                >
                     <WebView 
                         originWhitelist={['*']}
                         source={{
