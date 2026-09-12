@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { ActivityIndicator, Keyboard, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Keyboard, Scrollview, StyleSheet, Text, View } from 'react-native';
 import CustomButton from '../../src/components/CustomButton';
 import CustomInput from '../../src/components/CustomInput';
+import HistoryChart from '../../src/components/HistoryChart';
 import { useTheme } from '../../src/contexts/ThemeContext';
 import { formatColons } from '../../src/utils/formatters';
 import { useCalculatorViewModel } from '../../src/viewmodels/useCalculatorViewModel';
@@ -49,7 +50,12 @@ export default function CalculatorScreen() {
     }
 
     return (
-        <View style={[styles.container, themeStyles.background]}>
+        <Scrollview
+            style={themeStyles.background} 
+            contentContainerStyle={styles.container}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+        >
             <View style={[styles.card, themeStyles.cardBg]}>
                 <Text style={[styles.label, themeStyles.text]}>Current Exchange Rate:</Text>
                 <Text style={[styles.rate, themeStyles.accentText]}>
@@ -83,12 +89,15 @@ export default function CalculatorScreen() {
                     </Text>
                 </View>
             )}
-        </View>
+            {/*grafica*/}
+            <HistoryChart isDarkMode={isDarkMode} />
+        </Scrollview>
+            
     );
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, padding: 20 },
+    container: { flexGrow: 1, padding: 20 },
     centerContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
     card: { padding: 20, borderRadius: 12, marginBottom: 20, alignItems: 'center' },
     label: { fontSize: 16, marginBottom: 5 },
