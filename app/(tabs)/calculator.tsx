@@ -90,7 +90,10 @@ export default function CalculatorScreen() {
                 </View>
             )}
             {/*grafica*/}
-            <HistoryChart isDarkMode={isDarkMode} />
+            <HistoryChart 
+            isDarkMode={isDarkMode}
+            currentRate={exchangeRate}
+            />
         </ScrollView>
             
     );

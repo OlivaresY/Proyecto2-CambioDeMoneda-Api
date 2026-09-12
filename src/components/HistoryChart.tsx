@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { LineChart } from 'react-native-gifted-charts';
-import { getBacExchangeRate } from '../services/api/exchangeService';
 
 interface HistoryChartProps {
     isDarkMode?: boolean;
+    currentRate: number | null;
 }
 
-export default function HistoryChart({ isDarkMode = false }: HistoryChartProps) {
+export default function HistoryChart({ isDarkMode = false, currentRate }: HistoryChartProps) {
     const [activeFilter, setActiveFilter] = useState('1 M');
     const [chartData, setChartData] = useState<{ value: number; date: string }[]>([]);
     const [loading, setLoading] = useState(true);
+    const [chartBounds, setChartBounds] = useState({ minValue: 0, maxValue: 10 });
     const filters = ['1D', '5D', '1 M', '1A', 'Max.'];
 
     const screenWidth = Dimensions.get('window').width;
@@ -19,62 +20,87 @@ export default function HistoryChart({ isDarkMode = false }: HistoryChartProps) 
     const cardBgColor = isDarkMode ? '#1F2937' : '#FFFFFF';
 
     useEffect(() => {
-        async function loadChartData() {
-            try {
-                setLoading(true);
-                const rateResponse = await getBacExchangeRate()
-                const currentRate = rateResponse.compra //trae el historico
+        if (typeof currentRate !== 'number') return;
+            
+        const timer = setTimeout(() => {
+            let simulatedData = [];
+            const base = currentRate;
 
-                //serie historica basada em el valor actual de la API
-                let simulatedData = [];
-                if (activeFilter === '1D') {
-                    simulatedData = [
-                        { value: Number((currentRate - 1.5). toFixed(2)), date: 'Ayer' },
-                        { value: Number((currentRate - 0.8).toFixed(2)), date: '6:00' },
-                        { value: Number((currentRate - 1.2).toFixed(2)), date: 'Hoy' },
-                    ];
-                } else if (activeFilter === '5D') {
-                    simulatedData = [
-                        { value: Number((currentRate - 2.0).toFixed(2)), date: 'Hace 5 días' },
-                        { value: Number((currentRate - 1.5).toFixed(2)), date: 'Hace 4 días' },
-                        { value: Number((currentRate - 0.5).toFixed(2)), date: 'Hace 3 días' },
-                        { value: Number((currentRate - 1.0).toFixed(2)), date: 'Ayer' },
-                        { value: Number(currentRate.toFixed(2)), date: 'Hoy' },
-                    ];
-                } else {
-                    // 1 M, 1A, Max: Simulamos una curva completa conectando con el valor real actual
-                    simulatedData = [
-                        { value: Number((currentRate - 4.0).toFixed(2)), date: '21 ago' },
-                        { value: Number((currentRate - 2.5).toFixed(2)), date: '23 ago' },
-                        { value: Number((currentRate - 3.0).toFixed(2)), date: '25 ago' },
-                        { value: Number((currentRate - 1.0).toFixed(2)), date: '27 ago' },
-                        { value: Number((currentRate - 2.0).toFixed(2)), date: '29 ago' },
-                        { value: Number((currentRate - 0.5).toFixed(2)), date: '31 ago' },
-                        { value: Number(currentRate.toFixed(2)), date: '2 sept' },
-                    ];
-                }
-
-                setChartData(simulatedData);
-
-            } catch (error) {
-                console.error("Error loading data for the chart:", error);
-            } finally {
-                setLoading(false);
+            if (activeFilter === '1D') {
+                simulatedData = [
+                    { value: 521.40, date: 'Ayer' },
+                    { value: 521.60, date: '6:00' },
+                    { value: 521.20, date: '12:00' },
+                    { value: Number(base.toFixed(2)), date: 'Hoy' },
+                ];
+            } else if (activeFilter === '5D') {
+                simulatedData = [
+                    { value: 523.00, date: 'Hace 5 días' },
+                    { value: 522.70, date: 'Hace 4 días' },
+                    { value: 521.90, date: 'Hace 3 días' },
+                    { value: 521.40, date: 'Ayer' },
+                    { value: Number(base.toFixed(2)), date: 'Hoy' },
+                ];
+            } else if (activeFilter === '1 M') {
+                simulatedData = [
+                    { value: Number((base + 3.20).toFixed(2)), date: '1 ago' },
+                    { value: Number((base + 1.50).toFixed(2)), date: '7 ago' },
+                    { value: Number((base + 2.80).toFixed(2)), date: '14 ago' },
+                    { value: Number((base - 1.40).toFixed(2)), date: '21 ago' },
+                    { value: Number((base + 0.60).toFixed(2)), date: '28 ago' },
+                    { value: Number(base.toFixed(2)), date: 'Hoy' },
+                ];
+            } else if (activeFilter === '1A') {
+                simulatedData = [
+                    { value: Number((base - 14.00).toFixed(2)), date: 'Sep' },
+                    { value: Number((base - 8.20).toFixed(2)), date: 'Dic' },
+                    { value: Number((base - 4.50).toFixed(2)), date: 'Mar' },
+                    { value: Number((base + 6.00).toFixed(2)), date: 'Jun' },
+                    { value: Number((base + 2.10).toFixed(2)), date: 'Ago' },
+                    { value: Number(base.toFixed(2)), date: 'Hoy' },
+                ];
+            } else {
+                simulatedData = [
+                    { value: Number((base - 28.00).toFixed(2)), date: '2023' },
+                    { value: Number((base - 16.50).toFixed(2)), date: '2024' },
+                    { value: Number((base + 10.00).toFixed(2)), date: '2025 Q1' },
+                    { value: Number((base - 6.00).toFixed(2)), date: '2025 Q3' },
+                    { value: Number((base + 4.50).toFixed(2)), date: '2026' },
+                    { value: Number(base.toFixed(2)), date: 'Hoy' },
+                ];
             }
-        }
 
-        loadChartData();
-    }, [activeFilter]); //recarga si el usuario cambia el filtro de tiempo
+            const rawMin = Math.min(...simulatedData.map(item => item.value));
+            const rawMax = Math.max(...simulatedData.map(item => item.value));
+
+            const padding = (rawMax - rawMin) * 0.2 || 1.5;
+            const calculatedMin = Number((rawMin - padding).toFixed(2));
+            const calculatedMax = Number((rawMax + padding).toFixed(2));
+
+            setChartBounds({
+                minValue: calculatedMin,
+                maxValue: calculatedMax > calculatedMin ? calculatedMax : calculatedMin + 10
+            });
+
+            setChartData(simulatedData);
+            setLoading(false);
+        }, 150);
+
+        return () => clearTimeout(timer);
+    }, [activeFilter, currentRate]);
 
     return (
         <View style={[styles.container, { backgroundColor: cardBgColor }]}>
 
-        {/* Fila de botones de tiempo */}
+            {/* Fila de botones de tiempo */}
             <View style={styles.filterContainer}>
                 {filters.map((filter) => (
                     <TouchableOpacity
                         key={filter}
-                        onPress={() => setActiveFilter(filter)}
+                        onPress={() => {
+                            setLoading(true);
+                            setActiveFilter(filter);
+                        }}
                         style={[
                             styles.filterButton,
                             activeFilter === filter && styles.activeFilterButton
@@ -101,6 +127,8 @@ export default function HistoryChart({ isDarkMode = false }: HistoryChartProps) 
                 <View style={styles.chartWrapper}>
                     <LineChart
                         data={chartData}
+                        maxValue={chartBounds.maxValue}
+                        yAxisOffset={chartBounds.minValue}
                         height={180}
                         width={screenWidth - 80}
                         thickness={2}
@@ -110,8 +138,9 @@ export default function HistoryChart({ isDarkMode = false }: HistoryChartProps) 
                         startOpacity={0.2}
                         endFillColor="#22C55E"
                         endOpacity={0.02}
-                        yAxisTextStyle={{ color: subTextColor, fontSize: 12 }}
-                        xAxisLabelTextStyle={{ color: subTextColor, fontSize: 12, width: 60, marginLeft: -10 }}
+                        noOfSections={4}
+                        yAxisTextStyle={{ color: subTextColor, fontSize: 11 }}
+                        xAxisLabelTextStyle={{ color: subTextColor, fontSize: 11, width: 55, marginLeft: -12 }}
                         yAxisColor="transparent"
                         xAxisColor={isDarkMode ? '#374151' : '#E5E7EB'}
                         hideRules
@@ -133,7 +162,7 @@ export default function HistoryChart({ isDarkMode = false }: HistoryChartProps) 
                                 return (
                                     <View style={[styles.tooltip, { backgroundColor: isDarkMode ? '#374151' : '#FFFFFF' }]}>
                                         <Text style={[styles.tooltipValue, { color: textColor }]}>
-                                            {items[0]?.value}
+                                            {items[0]?.value?.toFixed(2)}
                                         </Text>
                                         <Text style={styles.tooltipDate}>
                                             {items[0]?.date}
@@ -208,7 +237,7 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         borderWidth: 1,
         borderColor: '#E5E7EB',
-        marginLeft: -40,
+        marginLeft: -20,
     },
     tooltipValue: {
         fontWeight: 'bold',
