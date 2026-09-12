@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router';
 import { StyleSheet, Switch, Text, View } from 'react-native';
 import CustomButton from '../../src/components/CustomButton';
 import { useAuth } from '../../src/contexts/AuthContext';
@@ -9,7 +10,12 @@ export default function SettingsScreen() {
     const isDarkMode = theme === 'dark';
     
     const { user, logout } = useAuth();
+    const router = useRouter();
     const themeStyles = isDarkMode ? darkStyles : lightStyles;
+    const handleThemeToggle = () => {
+        toggleTheme();
+        router.replace('/(tabs)/calculator');
+    }
 
     return (
         <View style={[styles.container, themeStyles.background]}>
@@ -26,11 +32,13 @@ export default function SettingsScreen() {
                     <Text style={[styles.label, themeStyles.text]}>Dark Mode</Text>
                     <Switch
                         value={isDarkMode}
-                        onValueChange={toggleTheme}
+                        onValueChange={handleThemeToggle}
                     />
                 </View>
 
                 <CustomButton title="Logout" onPress={logout} />
+
+                <Text style={[styles.versionText, themeStyles.text]}>Version 1.0.0</Text>
             </View>
         </View>
     );
@@ -42,7 +50,8 @@ const styles = StyleSheet.create({
     title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20, textAlign: 'center' },
     userInfo: { fontSize: 16, marginBottom: 20, textAlign: 'center' },
     row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 30 },
-    label: { fontSize: 18 }
+    label: { fontSize: 18 },
+    versionText: { fontSize: 12, textAlign: 'center', marginTop: 20, opacity: 0.6 }
 });
 
 const lightStyles = StyleSheet.create({
