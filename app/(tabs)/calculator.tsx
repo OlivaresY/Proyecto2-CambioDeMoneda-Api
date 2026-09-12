@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ActivityIndicator, Keyboard, Scrollview, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Keyboard, ScrollView, StyleSheet, Text, View } from 'react-native';
 import CustomButton from '../../src/components/CustomButton';
 import CustomInput from '../../src/components/CustomInput';
 import HistoryChart from '../../src/components/HistoryChart';
@@ -50,7 +50,7 @@ export default function CalculatorScreen() {
     }
 
     return (
-        <Scrollview
+        <ScrollView
             style={themeStyles.background} 
             contentContainerStyle={styles.container}
             keyboardShouldPersistTaps="handled"
@@ -91,7 +91,7 @@ export default function CalculatorScreen() {
             )}
             {/*grafica*/}
             <HistoryChart isDarkMode={isDarkMode} />
-        </Scrollview>
+        </ScrollView>
             
     );
 }
