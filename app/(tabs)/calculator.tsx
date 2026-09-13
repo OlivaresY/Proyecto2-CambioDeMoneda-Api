@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ActivityIndicator, Keyboard, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Keyboard, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import CustomButton from '../../src/components/CustomButton';
 import CustomInput from '../../src/components/CustomInput';
 import HistoryChart from '../../src/components/HistoryChart';
@@ -14,12 +14,16 @@ export default function CalculatorScreen() {
     const [amount, setAmount] = useState('');
     const [submittedAmount, setSubmittedAmount] = useState<number | null>(null);
     const [result, setResult] = useState<{real: number; withSurcharge: number } | null>(null);
+    const [showHistory, setShowhistory] = useState(false);
 
     const {
         loading,
         exchangeRate,
         calculate,
-        error
+        error,
+        history,
+        deleteHistoryItem,
+        clearHistory
     } = useCalculatorViewModel();
 
     const themeStyles = isDarkMode ? darkStyles : lightStyles;
@@ -94,6 +98,53 @@ export default function CalculatorScreen() {
             isDarkMode={isDarkMode}
             currentRate={exchangeRate}
             />
+
+            <View style={styles.historyToggleContainer}>
+                <CustomButton
+                title={showHistory ? "hide History" : "Show History"}
+                onPress={() => setShowhistory(!showHistory)}
+                />
+            </View>
+
+            {showHistory && (
+                <View style={styles.historySection}>
+                    <View style={styles.historyHeader}>
+                        <Text style={[styles.historTitle, themeStyles.text]}>Saved Calculations</Text>
+                        {history.length > 0 && (
+                            <TouchableOpacity onPress={clearHistory}>
+                                <Text style={styles.clearText}>Clear All</Text>
+                            </TouchableOpacity>
+                        )}
+                    </View>
+                    {history.length === 0 ? (
+                        <Text style={[styles.emptyText, themeStyles.text]}>No history available</Text>
+
+                    ) :(
+                        history.map((item) => (
+                            <View key={item.id} style={[styles.historyItemCard, themeStyles.cardBg]}>
+                                <View style={styles.historyItemContent}>
+                                    <Text style={[styles.historyItemText, themeStyles.text]}>
+                                        Amount to Convert ({item.currency}): ${formatColons(item.amount)}
+                                    </Text>
+                                    <Text style={[styles.historyItemText, themeStyles.text]}>
+                                        Real Amount: ₡{formatColons(item.realResult)}
+                                    </Text>
+                                    <Text style={[styles.historyItemText, themeStyles.text]}>
+                                        Amount BAC+2: ₡{formatColons(item.surchargeResult)}
+                                    </Text>
+                                </View>
+                                <TouchableOpacity 
+                                    style={styles.deleteBtn} 
+                                    onPress={() => deleteHistoryItem(item.id)}
+                                >
+                                    <Text style={styles.deleteBtnText}>X</Text>
+                                </TouchableOpacity>
+                            </View>
+                        ))
+                    )}
+                </View>
+            )}
+    
         </ScrollView>
             
     );
@@ -109,7 +160,19 @@ const styles = StyleSheet.create({
     resultsContainer: { marginTop: 30, padding: 20, borderRadius: 12, backgroundColor: 'rgba(0,0,0,0.05)' },
     inputEchoText: { fontSize: 18, fontWeight: 'bold', marginBottom: 10 },
     resultText: { fontSize: 18, marginVertical: 5, fontWeight: '500' },
-    errorText: { color: 'red', marginBottom: 15, textAlign: 'center' }
+    errorText: { color: 'red', marginBottom: 15, textAlign: 'center' },
+
+    historyToggleContainer: { marginTop: 20 },
+    historySection: { marginTop: 10, marginBottom: 30 },
+    historyHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 15 },
+    historyTitle: { fontSize: 20, fontWeight: 'bold' },
+    clearText: { color: '#EF4444', fontWeight: 'bold', fontSize: 14 },
+    emptyText: { fontStyle: 'italic', opacity: 0.6, textAlign: 'center', marginTop: 10 },
+    historyItemCard: { flexDirection: 'row', padding: 15, borderRadius: 10, marginBottom: 10, alignItems: 'center', justifyContent: 'space-between' },
+    historyItemContent: { flex: 1 },
+    historyItemText: { fontSize: 14, marginVertical: 2, fontWeight: '500' },
+    deleteBtn: { backgroundColor: '#EF4444', width: 30, height: 30, borderRadius: 15, justifyContent: 'center', alignItems: 'center', marginLeft: 10 },
+    deleteBtnText: { color: 'white', fontWeight: 'bold', fontSize: 14 }
 });
 
 const lightStyles = StyleSheet.create({
