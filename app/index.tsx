@@ -46,6 +46,9 @@ export default function LoginScreen() {
             <CustomButton title="Login" onPress={handleLogin} />
           </View>
         )}
+        <Text style={[styles.footerText, themeStyles.footerText]}>
+          © {new Date().getFullYear()} YOR. Todos los derechos reservados.
+        </Text>
       </View>
     </View>
   );
@@ -87,6 +90,12 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     textAlign: "center",
   },
+  footerText: {
+    marginTop: 35,
+    fontSize: 12,
+    letterSpacing: 0.5,
+    textAlign: "center",
+  },
 });
 
 const lightStyles = StyleSheet.create({
@@ -95,6 +104,9 @@ const lightStyles = StyleSheet.create({
   },
   text: {
     color: '#111827',
+  },
+  footerText: {
+    color: '#9CA3AF', //gris modo claro
   },
 });
 
@@ -105,4 +117,7 @@ const darkStyles = StyleSheet.create({
   text: {
     color: '#F9FAFB',
   },
+  footerText: {
+    color: '#6B7280',//gris modo oscuro
+  }
 });

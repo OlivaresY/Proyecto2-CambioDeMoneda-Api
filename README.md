@@ -1,50 +1,52 @@
-# Welcome to your Expo app 👋
+# BAC Calculator & Weather App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Aplicación móvil desarrollada con **React Native** y **Expo**, diseñada bajo el patrón de arquitectura **MVVM (Model-View-ViewModel)**. Permite consultar el tipo de cambio oficial del Banco BAC San José en tiempo real, realizar conversiones de divisas bidireccionales con cálculo de recargo, mantener un historial persistente de operaciones y consultar datos del clima.
 
-## Get started
+**Versión:** 1.0.0
 
-1. Install dependencies
+---
+
+## Características Principales
+
+* **Autenticación Simulada:** Pantalla de inicio de sesión con validación de campos. **Nota importante:** Actualmente no existe una base de datos de usuarios registrados; se puede ingresar con **cualquier correo y contraseña** siempre que ambos campos contengan texto.
+* **Consulta en Tiempo Real:** Consumo de API pública REST para obtener la tasa de cambio de compra y venta del Banco BAC San José.
+* **Conversión Bidireccional:** Selector interactivo para alternar entre conversiones:
+  * Dólares a Colones (`USD ➔ CRC`)
+  * Colones a Dólares (`CRC ➔ USD`)
+* **Cálculo con Recargo:** Visualización del monto real calculado según la tasa oficial y del monto con recargo comercial establecido (`BAC + 2`).
+* **Gráfica de Tendencia:** Componente visual para seguir la evolución del tipo de cambio.
+* **Historial Persistente de Cálculos:**
+  * **Botón Show/Hide History:** Permite desplegar u ocultar la lista de operaciones guardadas.
+  * **Persistencia Local:** Todos los cálculos se guardan automáticamente en el almacenamiento local del dispositivo (`AsyncStorage`).
+  * **Gestión de Registros:** Cada cálculo se presenta en una tarjeta detallada con sus valores y símbolos respectivos, incluyendo un botón individual (`X`) para eliminar registros específicos o la opción de limpiar el historial completo (`Clear All`).
+* **Soporte Multi-tema:** Alternancia dinámica entre modo claro y modo oscuro en toda la interfaz.
+
+---
+
+## Arquitectura del Proyecto
+
+El proyecto sigue rigurosamente el patrón **MVVM**:
+
+* `src/models/`: Definición de interfaces TypeScript y contratos de datos (`ExchangeRateResponse`, `CalculationHistoryItem`).
+* `src/services/`: Capa de infraestructura encargada del consumo de APIs REST y del manejo del almacenamiento local (`localDatabase` / `AsyncStorage`).
+* `src/viewmodels/`: Hooks personalizados (`useCalculatorViewModel`, `useLoginViewModel`) que encapsulan la lógica de negocio, estados y suscripciones asíncronas.
+* `app/` y `src/components/`: Capa de vista encargada exclusivamente del renderizado visual y la experiencia de usuario.
+
+---
+
+## Tecnologías Utilizadas
+
+* [React Native](https://reactnative.dev/)
+* [Expo](https://expo.dev/) (Expo Go / Expo Router)
+* [TypeScript](https://www.typescriptlang.org/)
+* [AsyncStorage](https://react-native-async-storage/async-storage) (Persistencia local)
+* [Axios / Fetch API](https://developer.mozilla.org/es/docs/Web/API/Fetch_API) (Consumo REST)
+
+---
+
+## Instalación y Ejecución
+
+1. **Instalar las dependencias del proyecto:**
 
    ```bash
    npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
