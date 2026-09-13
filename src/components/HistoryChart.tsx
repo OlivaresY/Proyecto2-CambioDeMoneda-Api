@@ -92,7 +92,7 @@ export default function HistoryChart({ isDarkMode = false, currentRate }: Histor
     return (
         <View style={[styles.container, { backgroundColor: cardBgColor }]}>
 
-            {/* Fila de botones de tiempo */}
+            {/*Fila de botones de tiempo*/}
             <View style={styles.filterContainer}>
                 {filters.map((filter) => (
                     <TouchableOpacity
@@ -117,7 +117,7 @@ export default function HistoryChart({ isDarkMode = false, currentRate }: Histor
                 ))}
             </View>
 
-            {/* Gráfica o indicador de carga */}
+            {/*Gráfica o indicador de carga*/}
             {loading ? (
                 <View style={styles.loaderContainer}>
                     <ActivityIndicator size="small" color="#22C55E" />
