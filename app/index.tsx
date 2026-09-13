@@ -1,4 +1,4 @@
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Image, StyleSheet, Text, View } from "react-native";
 import CustomButton from "../src/components/CustomButton";
 import CustomInput from "../src/components/CustomInput";
 import { useTheme } from "../src/contexts/ThemeContext";
@@ -13,57 +13,96 @@ export default function LoginScreen() {
 
   return (
     <View style={[styles.container, themeStyles.background]}>
-      <Text style={[styles.title, themeStyles.text]}>Sign In</Text>
+      <View style={styles.contentWrapper}>
+        <Image
+        source={require('../assets/images/bac_logo.png')}
+        style={styles.logo}
+        resizeMode="contain"
+        />
 
-      <CustomInput
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
+        <Text style={[styles.title, themeStyles.text]}>Sign In</Text>
+
+        <View style={styles.inputContainer}>
+
+        <CustomInput
+          placeholder="Email"
+          value={email}
+          onChangeText={setEmail}
         />
-      <CustomInput
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
+        <CustomInput
+          placeholder="Password"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
         />
+      </View>
 
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
         {loading ? (
           <ActivityIndicator size="large" color="#007AFF" style={styles.loader} />
         ) : (
-          <CustomButton title="Login" onPress={handleLogin} />
+          <View style={styles.buttonContainer}>
+            <CustomButton title="Login" onPress={handleLogin} />
+          </View>
         )}
+      </View>
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
-    paddingHorizontal: 20},
+  },
+  contentWrapper: {
+    width: '100%',
+    paddingHorizontal: 24,
+    alignItems: 'center',
+  },
+  logo: {
+    width: '85%',
+    maxWidth: 320,
+    height: 110,
+    marginBottom: 20,
+  },
   title: {
-    fontSize: 28, fontWeight: "bold", marginBottom: 30, textAlign: "center"},
-    loader: {
-      marginTop: 20,
-    },
-    errorText: {
-      color: "red",
-      marginBottom: 15,
-      textAlign: "center"}
+    fontSize: 28,
+    fontWeight: "bold",
+    marginBottom: 25,
+    textAlign: "center",
+  },
+  inputContainer: {
+    width: '100%',
+  },
+  buttonContainer: {
+    width: '100%',
+    marginTop: 10,
+  },
+  loader: {
+    marginTop: 20,
+  },
+  errorText: {
+    color: "red",
+    marginBottom: 15,
+    textAlign: "center",
+  },
 });
 
 const lightStyles = StyleSheet.create({
   background: {
-    backgroundColor: '#F3F4F6' },
+    backgroundColor: '#F3F4F6',
+  },
   text: {
-    color: '#111827' }
-  });
+    color: '#111827',
+  },
+});
 
-  const darkStyles = StyleSheet.create({
-    background: {
-      backgroundColor: '#1F2937' },
-    text: {
-      color: '#F9FAFB' }
-  });
+const darkStyles = StyleSheet.create({
+  background: {
+    backgroundColor: '#1F2937',
+  },
+  text: {
+    color: '#F9FAFB',
+  },
+});
