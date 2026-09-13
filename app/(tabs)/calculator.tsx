@@ -16,6 +16,16 @@ export default function CalculatorScreen() {
     const [result, setResult] = useState<{real: number; withSurcharge: number } | null>(null);
     const [showHistory, setShowhistory] = useState(false);
 
+    const [currency, setCurrency] = useState<'USD' | 'CRC'>('USD');//seleccionar tipo moneda
+    const [submittedCurrency, setSubmittedCurrency] = useState<'USD' | 'CRC'>('USD');
+
+    const toggleCurrency = () => {
+        setCurrency((prev) => (prev === 'USD' ? 'CRC' : 'USD'));
+        setResult(null);
+        setSubmittedAmount(null);
+        setAmount('');
+    };
+
     const {
         loading,
         exchangeRate,
@@ -35,13 +45,13 @@ export default function CalculatorScreen() {
 
         Keyboard.dismiss();//se ceirra teclado al darle convert
 
-        //llamamos a ViewModel pasando el monto y la moneda por defecto 'USD'
-        const res = calculate(numericAmount, 'USD');
-        if (res !== null) {
-            setResult(res);
-            setSubmittedAmount(numericAmount); //se guarda el monto para la cabezara del resultado
-            setAmount(''); //borra el contenido del input
-        }
+        const res = calculate(numericAmount, currency);//se elimina la moneda activa
+            if (res !== null) {
+                setResult(res);
+                setSubmittedAmount(numericAmount);
+                setSubmittedCurrency(currency);
+                setAmount('');
+            }
     };
 
     if (loading) {
@@ -52,6 +62,9 @@ export default function CalculatorScreen() {
             </View>
         );
     }
+    //simbolos dinamicos para las monedas
+    const inputSymbol = submittedCurrency === 'USD' ? '$' : '₡';
+    const outputSymbol = submittedCurrency === 'USD' ? '₡' : '$';
 
     return (
         <ScrollView
@@ -69,8 +82,15 @@ export default function CalculatorScreen() {
 
             {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
+            <View style={styles.CurrencyToggleContainer}>
+                <CustomButton
+                title={`Mode: ${currency === 'USD' ? 'USD -> CRC ($ to ₡)' : 'CRC ➔ USD (₡ to $)'}`}
+                onPress={toggleCurrency}
+                />
+            </View>
+
             <CustomInput
-                placeholder="Amount To Convert (USD)"
+                placeholder={`Amount To Convert (${currency})`}
                 value={amount}
                 onChangeText={setAmount}
                 keyboardType="numeric"
@@ -83,10 +103,10 @@ export default function CalculatorScreen() {
             {result !== null &&  submittedAmount !== null && (
                 <View style={[styles.resultsContainer, themeStyles.cardBg]}>
                     <Text style={[styles.inputEchoText, themeStyles.accentText]}>
-                        ${formatColons(submittedAmount)} Are:
+                        {inputSymbol}{formatColons(submittedAmount)} Are:
                     </Text>
                     <Text style={[styles.resultText, themeStyles.text]}>
-                        Real Amount: ₡{formatColons(result.real)}
+                        Real Amount: {outputSymbol}{formatColons(result.real)}
                     </Text>
                     <Text style={[styles.resultText, themeStyles.text]}>
                         Amount BAC+2: ₡{formatColons(result.withSurcharge)}
@@ -109,28 +129,33 @@ export default function CalculatorScreen() {
             {showHistory && (
                 <View style={styles.historySection}>
                     <View style={styles.historyHeader}>
-                        <Text style={[styles.historTitle, themeStyles.text]}>Saved Calculations</Text>
+                        <Text style={[styles.historyTitle, themeStyles.text]}>Saved Calculations</Text>
                         {history.length > 0 && (
                             <TouchableOpacity onPress={clearHistory}>
                                 <Text style={styles.clearText}>Clear All</Text>
                             </TouchableOpacity>
                         )}
                     </View>
+
                     {history.length === 0 ? (
                         <Text style={[styles.emptyText, themeStyles.text]}>No history available</Text>
+                    ) : (
+                        history.map((item) => {
+                            const itemInSymbol = item.currency === 'USD' ? '$' : '₡';
+                            const itemOutSymbol = item.currency === 'USD' ? '₡' : '$';
 
-                    ) :(
-                        history.map((item) => (
+                            return (
+
                             <View key={item.id} style={[styles.historyItemCard, themeStyles.cardBg]}>
                                 <View style={styles.historyItemContent}>
                                     <Text style={[styles.historyItemText, themeStyles.text]}>
-                                        Amount to Convert ({item.currency}): ${formatColons(item.amount)}
+                                        Amount to Convert ({item.currency}): {itemInSymbol}{formatColons(item.amount)}
                                     </Text>
                                     <Text style={[styles.historyItemText, themeStyles.text]}>
                                         Real Amount: ₡{formatColons(item.realResult)}
                                     </Text>
                                     <Text style={[styles.historyItemText, themeStyles.text]}>
-                                        Amount BAC+2: ₡{formatColons(item.surchargeResult)}
+                                        Real Amount: {itemOutSymbol}{formatColons(item.realResult)}
                                     </Text>
                                 </View>
                                 <TouchableOpacity 
@@ -140,11 +165,11 @@ export default function CalculatorScreen() {
                                     <Text style={styles.deleteBtnText}>X</Text>
                                 </TouchableOpacity>
                             </View>
-                        ))
+                            );
+                        })
                     )}
                 </View>
             )}
-    
         </ScrollView>
             
     );
@@ -161,6 +186,8 @@ const styles = StyleSheet.create({
     inputEchoText: { fontSize: 18, fontWeight: 'bold', marginBottom: 10 },
     resultText: { fontSize: 18, marginVertical: 5, fontWeight: '500' },
     errorText: { color: 'red', marginBottom: 15, textAlign: 'center' },
+
+    CurrencyToggleContainer: { marginBottom: 15},
 
     historyToggleContainer: { marginTop: 20 },
     historySection: { marginTop: 10, marginBottom: 30 },

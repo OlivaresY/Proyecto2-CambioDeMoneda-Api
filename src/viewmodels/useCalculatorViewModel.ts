@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
+import { CalculationHistoryItem } from '../models/exchange.model';
 import { getBacExchangeRate } from '../services/api/exchangeService';
 import { localDatabase } from '../services/storage/localDatabase';
-import { CalculationHistoryItem } from '../models/exchange.model';
 
 
 interface CalculationResult {
@@ -21,7 +21,8 @@ export const useCalculatorViewModel = () => {
         try {
             //inyeccion y llamada al servicio para obtener la tasa de cambio BAC
             const data = await getBacExchangeRate();
-            setExchangeRate(data.sale); //o tambien se usa date.compra dependiendo la tasa qu se necesita calcular
+            const rate = data.sale;
+            setExchangeRate(rate); //o tambien se usa date.compra dependiendo la tasa qu se necesita calcular
         } catch {
             setError('Failed to fetch exchange rate from Banco BAC San José.');
         } finally {
@@ -30,9 +31,13 @@ export const useCalculatorViewModel = () => {
     }, []);
 
     const loadHistory = useCallback(async () => {
-        const storedHistory = await localDatabase.getItem<CalculationHistoryItem[]>('CALC_HISTORY'){
-        if (storedHistory) {
-            setHistory(storedHistory);
+        try { 
+            const storedHistory = await localDatabase.getItem<CalculationHistoryItem[]>('CALC_HISTORY');
+            if (storedHistory) {
+                setHistory(storedHistory);
+            }
+        } catch (err) {
+            console.error('Error loading history from storage:', err);
         }
     }, []);
 

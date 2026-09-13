@@ -10,27 +10,27 @@ export const getBacExchangeRate = async (): Promise<ExchangeRateResponse> => {
 
     //si el servidor responde con HTML por error, evitamos que colapse el JSON.parse
     if (text.trim().startsWith('<')) {
-      throw new Error('El servidor devolvió HTML en lugar de JSON');
+      throw new Error('The server returned HTML instead of JSON');
     }
 
     const data = JSON.parse(text);
     
-    const compra = Number(data.compra?.valor || data.compra || 0);
-    const venta = Number(data.venta?.valor || data.venta || 0);
+    const purchase = Number(data.purchase?.valor || data.purchase || 0);
+    const sale = Number(data.sale?.valor || data.sale || 0);
 
     return {
       institution: 'Banco BAC San José',
-      compra: compra > 0 ? compra : 500.00,
-      venta: venta > 0 ? venta : 513.00,
+      purchase: purchase > 0 ? purchase : 500.00,
+      sale: sale > 0 ? sale : 513.00,
     };
   } catch (error) {
-    console.warn('Aviso: Usando tipo de cambio de respaldo por error de red:', error);
+    console.warn('Notice: Using fallback exchange rate due to network:', error);
     
     //fallback seguro para que la app y la calculadora nunca se queden sin datos
     return {
-      institution: 'Banco BAC San José (Respaldo)',
-      compra: 500.00,
-      venta: 513.00,
+      institution: 'Bank BAC San José (fallback)',
+      purchase: 500.00,
+      sale: 513.00,
     };
   }
 };
